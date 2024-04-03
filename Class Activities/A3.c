@@ -24,7 +24,8 @@ int main() {
     pid_A = fork();
     if (pid_A == 0) {
         printf("Process A (pid: %d, child of Q) is printing a random number: %d.\n", getpid(), a);
-        exit(0);
+        sleep(10);
+        return 10;
     } else {
         pid_B = fork();
         if (pid_B == 0) {
@@ -34,20 +35,21 @@ int main() {
             pid_M = fork();
             if (pid_M == 0) {
                 printf("Process M (pid: %d, child of Q) is printing a random number: %d.\n", getpid(), c);
-                exit(0);
+                sleep(10);
+                return 3;
             }
         }
     }
 
-    if (pid_Q > 0) {
-        for (int i = 0; i < 3; i++) {
-            wait(&status);
-            if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-                cont++;
-            }
-        }
-        printf("Successfull proceses completed: %d\n", cont);
-    }
+    waitpid(pid_A,&status,0);
+    printf("Process A (pid: %d) returned with status: %d\n", pid_A, WEXITSTATUS(status));
+  
+    waitpid(pid_B,&status,0);
+    printf("Process B (pid: %d) returned with status: %d\n", pid_B, WEXITSTATUS(status));
+
+    waitpid(pid_M,&status,0);
+    printf("Process M (pid: %d) returned with status: %d\n", pid_M, WEXITSTATUS(status));
 
     return 0;
 }
+
